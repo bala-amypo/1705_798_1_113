@@ -6,5 +6,5 @@ import com.example.demo.entity.StudentProfile;
 public interface StudentProfileRepository
         extends JpaRepository<StudentProfile, Long> {
 
-    StudentProfile findByStudentIdentifier(String id);
+    StudentProfile findByStudentIdentifier(String studentIdentifier);
 }

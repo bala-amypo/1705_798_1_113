@@ -1,7 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 public class StudentProfile {
@@ -10,31 +9,21 @@ public class StudentProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 🔴 REQUIRED FOR findByStudentIdentifier
     @Column(unique = true, nullable = false)
-    private String studentId;
+    private String studentIdentifier;
 
     private String name;
-
-    @Column(unique = true, nullable = false)
     private String email;
-
-    private String program;
-    private Integer yearLevel;
-    private Boolean isRepeatOffender = false;
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+    private String department;
 
     // ===== GETTERS =====
     public Long getId() {
         return id;
     }
 
-    public String getStudentId() {
-        return studentId;
+    public String getStudentIdentifier() {
+        return studentIdentifier;
     }
 
     public String getName() {
@@ -45,20 +34,8 @@ public class StudentProfile {
         return email;
     }
 
-    public String getProgram() {
-        return program;
-    }
-
-    public Integer getYearLevel() {
-        return yearLevel;
-    }
-
-    public Boolean getIsRepeatOffender() {
-        return isRepeatOffender;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getDepartment() {
+        return department;
     }
 
     // ===== SETTERS =====
@@ -66,8 +43,8 @@ public class StudentProfile {
         this.id = id;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public void setStudentIdentifier(String studentIdentifier) {
+        this.studentIdentifier = studentIdentifier;
     }
 
     public void setName(String name) {
@@ -78,19 +55,7 @@ public class StudentProfile {
         this.email = email;
     }
 
-    public void setProgram(String program) {
-        this.program = program;
-    }
-
-    public void setYearLevel(Integer yearLevel) {
-        this.yearLevel = yearLevel;
-    }
-
-    public void setIsRepeatOffender(Boolean isRepeatOffender) {
-        this.isRepeatOffender = isRepeatOffender;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }
