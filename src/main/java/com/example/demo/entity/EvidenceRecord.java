@@ -1,21 +1,19 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 
 @Entity
-public class IntegrityCase {
+public class EvidenceRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    private StudentProfile studentProfile;
+    private IntegrityCase integrityCase;
 
-    private String description;
-    private String status;
-    private LocalDate incidentDate;
+    private String evidenceType;
+    private String content;
 
     // getters & setters
 }
