@@ -9,41 +9,36 @@ public class IntegrityCase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    // 🔴 REQUIRED for repository query
     private String studentIdentifier;
-
     private String description;
     private String status;
 
-    // ===== GETTERS =====
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getStudentIdentifier() {
         return studentIdentifier;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    // ===== SETTERS =====
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setStudentIdentifier(String studentIdentifier) {
         this.studentIdentifier = studentIdentifier;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public void setStatus(String status) {
