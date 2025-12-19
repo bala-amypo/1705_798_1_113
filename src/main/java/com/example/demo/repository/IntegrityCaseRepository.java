@@ -1,7 +1,8 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.IntegrityCase;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.entity.IntegrityCase;
 
-public interface IntegrityCaseRepository extends JpaRepository<IntegrityCase, Long> {
+public interface IntegrityCaseRepository
+        extends JpaRepository<IntegrityCase, Long> {
 }

@@ -13,34 +13,21 @@ public class IntegrityCase {
     private String description;
     private String status;
 
-    public Long getId() {
-        return id;
-    }
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getStudentIdentifier() {
-        return studentIdentifier;
-    }
-
+    public String getStudentIdentifier() { return studentIdentifier; }
     public void setStudentIdentifier(String studentIdentifier) {
         this.studentIdentifier = studentIdentifier;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
+    public String getDescription() { return description; }
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
+    public String getStatus() { return status; }
     public void setStatus(String status) {
         this.status = status;
     }
