@@ -1,16 +1,22 @@
 package com.example.demo.service.impl;
+
+import org.springframework.stereotype.Service;
+
 import com.example.demo.entity.IntegrityCase;
 import com.example.demo.repository.IntegrityCaseRepository;
 import com.example.demo.service.IntegrityCaseService;
-import org.springframework.stereotype.Service;
+
 @Service
 public class IntegrityCaseServiceImpl implements IntegrityCaseService {
-    private final IntegrityCaseRepository integrityCaseRepository;
-    public IntegrityCaseServiceImpl(IntegrityCaseRepository integrityCaseRepository) {
-        this.integrityCaseRepository = integrityCaseRepository;
+
+    private final IntegrityCaseRepository repository;
+
+    public IntegrityCaseServiceImpl(IntegrityCaseRepository repository) {
+        this.repository = repository;
     }
+
     @Override
     public IntegrityCase createCase(IntegrityCase integrityCase) {
-        return integrityCaseRepository.save(integrityCase);
+        return repository.save(integrityCase);
     }
 }

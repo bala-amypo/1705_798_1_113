@@ -1,11 +1,12 @@
 package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.*;
+
 import com.example.demo.entity.IntegrityCase;
 import com.example.demo.service.IntegrityCaseService;
 
 @RestController
-@RequestMapping("/api/cases")
+@RequestMapping("/cases")
 public class IntegrityCaseController {
 
     private final IntegrityCaseService service;
@@ -15,7 +16,7 @@ public class IntegrityCaseController {
     }
 
     @PostMapping
-    public IntegrityCase create(@RequestBody IntegrityCase c) {
-        return service.createCase(c);
+    public IntegrityCase create(@RequestBody IntegrityCase integrityCase) {
+        return service.createCase(integrityCase);
     }
 }
