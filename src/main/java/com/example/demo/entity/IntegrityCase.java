@@ -5,9 +5,10 @@ import jakarta.persistence.*;
 @Entity
 public class IntegrityCase {
 
-    @Id
+   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+private Long id;
+
 
     // 🔴 REQUIRED for repository query
     private String studentIdentifier;
