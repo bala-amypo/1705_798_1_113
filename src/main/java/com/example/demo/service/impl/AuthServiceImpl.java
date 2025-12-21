@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
         String primaryRole = user.getRoles().stream().findFirst()
                 .map(Role::getName).orElse("CUSTOMER");
-        String token = jwtProvider.generateToken(user.getEmail(), user.getId(), primaryRole);
+String token = jwtTokenProvider.generateToken(user.getUsername(), user.getId(), user.getRole());
         return new AuthResponse(token, user.getId(), user.getEmail(), primaryRole);
     }
 }
