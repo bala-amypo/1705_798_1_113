@@ -1,53 +1,65 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "app_users")
 public class AppUser {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
+    @Column(unique = true, nullable = false)
+    private String username;
 
-    @Column(unique = true)
-    private String email;
+    @Column(nullable = false)
+    private String password; // store as BCrypt hash
 
-    private String password;
+    @Column(nullable = false)
+    private String role; // e.g., "ROLE_USER", "ROLE_ADMIN"
 
-    private Boolean enabled = true;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="role_id"))
-    private Set<Role> roles = new HashSet<>();
-
+    // Constructors
     public AppUser() {}
-    public AppUser(String fullName, String email, String password) {
-        this.fullName = fullName;
-        this.email = email;
+
+    public AppUser(String username, String password, String role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    // Getters (required for AuthServiceImpl)
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    // Setters (if needed)
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public Long getId() { return id; }
-    public String getFullName() { return fullName; }
-    public String getEmail() { return email; }
-    public String getPassword() { return password; }
-    public Boolean getEnabled() { return enabled; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public Set<Role> getRoles() { return roles; }
-
-    public void setId(Long id) { this.id = id; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-    public void setEmail(String email) { this.email = email; }
-    public void setPassword(String password) { this.password = password; }
-    public void setEnabled(Boolean enabled) { this.enabled = enabled; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public void setRoles(Set<Role> roles) { this.roles = roles; }
+    public void setRole(String role) {
+        this.role = role;
+    }
 }
+ 
