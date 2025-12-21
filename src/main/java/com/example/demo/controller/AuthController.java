@@ -1,27 +1,35 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.dto.ApiResponse;
 import com.example.demo.service.AuthService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
     private final AuthService authService;
+
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
     @PostMapping("/register")
-    public ApiResponse register(@RequestBody AuthRequest request) {
-        authService.register(request);
-        return new ApiResponse(true, "User registered successfully", null);
+    public ResponseEntity<?> register(@RequestBody Map<String, String> req) {
+        String username = req.get("username");
+        String password = req.get("password");
+        String role = req.getOrDefault("role", "ROLE_USER");
+        authService.register(username, password, role);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Registered"));
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
-        return authService.login(request);
+    public ResponseEntity<?> login(@RequestBody Map<String, String> req) {
+        String username = req.get("username");
+        String password = req.get("password");
+        String token = authService.login(username, password);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }

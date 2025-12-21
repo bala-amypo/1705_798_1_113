@@ -1,12 +1,7 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
 import com.example.demo.entity.AppUser;
-import com.example.demo.entity.Role;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.AppUserRepository;
-import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,38 +10,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final AppUserRepository userRepo;
-    private final RoleRepository roleRepo;
-    private final PasswordEncoder encoder;
-    private final JwtTokenProvider jwtProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(AppUserRepository userRepo, RoleRepository roleRepo,
-                           PasswordEncoder encoder, JwtTokenProvider jwtProvider) {
-        this.userRepo = userRepo;
-        this.roleRepo = roleRepo;
-        this.encoder = encoder;
-        this.jwtProvider = jwtProvider;
+    public AuthServiceImpl(JwtTokenProvider jwtTokenProvider,
+                           UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void register(AuthRequest request) {
-        if (userRepo.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+    public String login(String username, String rawPassword) {
+        AppUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
         }
-        Role role = roleRepo.findByName("CUSTOMER")
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-        AppUser user = new AppUser(request.getEmail(), request.getEmail(), encoder.encode(request.getPassword()));
-        user.getRoles().add(role);
-        userRepo.save(user);
+
+        // Extended token with claims
+        return jwtTokenProvider.generateToken(user.getUsername(), user.getId(), user.getRole());
+        // Or simple token:
+        // return jwtTokenProvider.generateToken(user.getUsername());
     }
 
     @Override
-    public AuthResponse login(AuthRequest request) {
-        AppUser user = userRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
-        String primaryRole = user.getRoles().stream().findFirst()
-                .map(Role::getName).orElse("CUSTOMER");
-String token = jwtTokenProvider.generateToken(user.getUsername(), user.getId(), user.getRole());
-        return new AuthResponse(token, user.getId(), user.getEmail(), primaryRole);
+    public void register(String username, String password, String role) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+        AppUser user = new AppUser(username, passwordEncoder.encode(password), role);
+        userRepository.save(user);
     }
 }
