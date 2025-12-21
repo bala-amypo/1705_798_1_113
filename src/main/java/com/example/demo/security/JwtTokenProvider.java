@@ -12,14 +12,16 @@ public class JwtTokenProvider {
     private final String SECRET_KEY = "secret";
     private final long VALIDITY_MS = 3600000; // 1 hour
 
-    public String generateToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + VALIDITY_MS))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
-    }
+    public String generateToken(String username, Long id, String role) {
+    return Jwts.builder()
+            .setSubject(username)
+            .claim("id", id)
+            .claim("role", role)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + VALIDITY_MS))
+            .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+            .compact();
+}
 
     public String getUsername(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY)
