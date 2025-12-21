@@ -9,10 +9,10 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final String SECRET_KEY = "secret";
+    private final String SECRET_KEY = "secret"; // replace with env/secure value
     private final long VALIDITY_MS = 3600000; // 1 hour
 
-    // Option A: simple version
+    // Simple token (username only)
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -22,7 +22,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Option B: extended version with claims
+    // Extended token (adds id and role as claims)
     public String generateToken(String username, Long id, String role) {
         return Jwts.builder()
                 .setSubject(username)
