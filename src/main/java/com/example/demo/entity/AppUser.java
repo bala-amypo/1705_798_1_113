@@ -14,12 +14,11 @@ public class AppUser {
     private String username;
 
     @Column(nullable = false)
-    private String password; // store as BCrypt hash
+    private String password; // BCrypt hash
 
     @Column(nullable = false)
-    private String role; // e.g., "ROLE_USER", "ROLE_ADMIN"
+    private String role; // e.g., "ROLE_USER"
 
-    // Constructors
     public AppUser() {}
 
     public AppUser(String username, String password, String role) {
@@ -28,38 +27,13 @@ public class AppUser {
         this.role = role;
     }
 
-    // Getters (required for AuthServiceImpl)
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public String getUsername() { return username; }
+    public String getPassword() { return password; }
+    public String getRole() { return role; }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    // Setters (if needed)
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    public void setId(Long id) { this.id = id; }
+    public void setUsername(String username) { this.username = username; }
+    public void setPassword(String password) { this.password = password; }
+    public void setRole(String role) { this.role = role; }
 }
- 
