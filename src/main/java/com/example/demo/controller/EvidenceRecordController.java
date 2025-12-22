@@ -1,12 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ApiResponse;
 import com.example.demo.entity.EvidenceRecord;
 import com.example.demo.service.EvidenceRecordService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/evidence")
+@RequestMapping("/api/evidence")
 public class EvidenceRecordController {
 
     private final EvidenceRecordService evidenceService;
@@ -16,8 +17,22 @@ public class EvidenceRecordController {
     }
 
     @PostMapping
-    public ApiResponse submit(@RequestBody EvidenceRecord evidenceRecord) {
-        EvidenceRecord saved = evidenceService.submitEvidence(evidenceRecord);
-        return new ApiResponse(true, "Evidence submitted", saved);
+    public EvidenceRecord submitEvidence(@RequestBody EvidenceRecord evidence) {
+        return evidenceService.submitEvidence(evidence);
+    }
+
+    @GetMapping("/case/{caseId}")
+    public List<EvidenceRecord> getEvidenceForCase(@PathVariable Long caseId) {
+        return evidenceService.getEvidenceForCase(caseId);
+    }
+
+    @GetMapping("/{id}")
+    public EvidenceRecord getEvidenceById(@PathVariable Long id) {
+        return evidenceService.getEvidenceById(id);
+    }
+
+    @GetMapping
+    public List<EvidenceRecord> getAllEvidence() {
+        return evidenceService.getAllEvidence();
     }
 }
