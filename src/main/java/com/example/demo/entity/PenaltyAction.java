@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class PenaltyAction {
@@ -9,25 +10,63 @@ public class PenaltyAction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long caseId;
+    @ManyToOne(optional = false)
+    private IntegrityCase integrityCase;
+
     private String penaltyType;
-    private String description;
+    private String details;
+    private String issuedBy;
+    private LocalDateTime issuedAt;
 
-    public PenaltyAction() {}
-
-    public PenaltyAction(Long caseId, String penaltyType, String description) {
-        this.caseId = caseId;
-        this.penaltyType = penaltyType;
-        this.description = description;
+    @PrePersist
+    void onCreate() {
+        issuedAt = LocalDateTime.now();
     }
-
-    public Long getId() { return id; }
-    public Long getCaseId() { return caseId; }
-    public String getPenaltyType() { return penaltyType; }
-    public String getDescription() { return description; }
-
-    public void setId(Long id) { this.id = id; }
-    public void setCaseId(Long caseId) { this.caseId = caseId; }
-    public void setPenaltyType(String penaltyType) { this.penaltyType = penaltyType; }
-    public void setDescription(String description) { this.description = description; }
+     public PenaltyAction(){}
+     public PenaltyAction(IntegrityCase integrityCase, String penaltyType, String details, String issuedBy,
+            LocalDateTime issuedAt) {
+        this.integrityCase = integrityCase;
+        this.penaltyType = penaltyType;
+        this.details = details;
+        this.issuedBy = issuedBy;
+        this.issuedAt = issuedAt;
+    }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public IntegrityCase getIntegrityCase() {
+        return integrityCase;
+    }
+    public void setIntegrityCase(IntegrityCase integrityCase) {
+        this.integrityCase = integrityCase;
+    }
+    public String getPenaltyType() {
+        return penaltyType;
+    }
+    public void setPenaltyType(String penaltyType) {
+        this.penaltyType = penaltyType;
+    }
+    public String getDetails() {
+        return details;
+    }
+    public void setDetails(String details) {
+        this.details = details;
+    }
+    public String getIssuedBy() {
+        return issuedBy;
+    }
+    public void setIssuedBy(String issuedBy) {
+        this.issuedBy = issuedBy;
+    }
+    public LocalDateTime getIssuedAt() {
+        return issuedAt;
+    }
+    public void setIssuedAt(LocalDateTime issuedAt) {
+        this.issuedAt = issuedAt;
+    }
+    
+    
 }

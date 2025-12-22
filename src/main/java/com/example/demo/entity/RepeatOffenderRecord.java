@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 public class RepeatOffenderRecord {
@@ -9,33 +10,61 @@ public class RepeatOffenderRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long studentId;
-    private int repeatCount;
-
-    @ManyToOne
+    @ManyToOne(optional = false)
     private StudentProfile studentProfile;
 
-    private int totalCases;
+    private Integer totalCases;
+    private LocalDate lastIncidentDate; // Field uses capital 'I'
     private String flagSeverity;
 
-    public RepeatOffenderRecord() {}
-
-    public RepeatOffenderRecord(Long studentId) {
-        this.studentId = studentId;
-        this.repeatCount = 0;
+    public RepeatOffenderRecord() {
     }
 
-    public Long getId() { return id; }
-    public Long getStudentId() { return studentId; }
-    public int getRepeatCount() { return repeatCount; }
-    public StudentProfile getStudentProfile() { return studentProfile; }
-    public int getTotalCases() { return totalCases; }
-    public String getFlagSeverity() { return flagSeverity; }
+    public RepeatOffenderRecord(StudentProfile studentProfile, Integer totalCases, LocalDate lastIncidentDate,
+            String flagSeverity) {
+        this.studentProfile = studentProfile;
+        this.totalCases = totalCases;
+        this.lastIncidentDate = lastIncidentDate;
+        this.flagSeverity = flagSeverity;
+    }
 
-    public void setId(Long id) { this.id = id; }
-    public void setStudentId(Long studentId) { this.studentId = studentId; }
-    public void setRepeatCount(int repeatCount) { this.repeatCount = repeatCount; }
-    public void setStudentProfile(StudentProfile studentProfile) { this.studentProfile = studentProfile; }
-    public void setTotalCases(int totalCases) { this.totalCases = totalCases; }
-    public void setFlagSeverity(String flagSeverity) { this.flagSeverity = flagSeverity; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public StudentProfile getStudentProfile() {
+        return studentProfile;
+    }
+
+    public void setStudentProfile(StudentProfile studentProfile) {
+        this.studentProfile = studentProfile;
+    }
+
+    public Integer getTotalCases() {
+        return totalCases;
+    }
+
+    public void setTotalCases(Integer totalCases) {
+        this.totalCases = totalCases;
+    }
+
+    public LocalDate getLastIncidentDate() {
+        return lastIncidentDate;
+    }
+
+    public void setLastIncidentDate(LocalDate lastIncidentDate) {
+        this.lastIncidentDate = lastIncidentDate;
+    }
+
+    public String getFlagSeverity() {
+        return flagSeverity;
+    }
+
+    public void setFlagSeverity(String flagSeverity) {
+        this.flagSeverity = flagSeverity;
+    }
 }
