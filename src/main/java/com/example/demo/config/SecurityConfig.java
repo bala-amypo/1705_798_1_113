@@ -65,21 +65,20 @@ public class SecurityConfig {
 
     // Security filter chain configuration
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-          .csrf(csrf -> csrf.disable())
-          .cors(cors -> {}) // enable CORS
-          .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler))
-          .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-          .authorizeHttpRequests(auth -> auth
-                  .requestMatchers("/auth/register", "/auth/login").permitAll()
-                  .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                  .anyRequest().authenticated()
-          )
-          .httpBasic(http -> http.disable()); // disable HTTP Basic since we use JWT
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+      .csrf(csrf -> csrf.disable())
+      .cors(cors -> {}) // enable CORS
+      .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler))
+      .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .authorizeHttpRequests(auth -> auth
+              .requestMatchers("/auth/register", "/auth/login").permitAll()
+              .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+              .anyRequest().authenticated()
+      )
+      .httpBasic(basic -> basic.disable()); // ✅ fixed
 
-        // Add JWT filter before UsernamePasswordAuthenticationFilter
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+}
 }
