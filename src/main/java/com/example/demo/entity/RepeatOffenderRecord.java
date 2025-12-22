@@ -9,11 +9,10 @@ public class RepeatOffenderRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Existing fields
     private Long studentId;
     private int repeatCount;
 
-    // New fields to match calculator usage
+    // New fields to support calculator logic
     @ManyToOne
     private StudentProfile studentProfile;
 
