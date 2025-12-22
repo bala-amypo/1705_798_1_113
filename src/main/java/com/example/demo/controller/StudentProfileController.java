@@ -1,5 +1,5 @@
 package com.example.demo.controller;
-
+n
 import com.example.demo.entity.StudentProfile;
 import com.example.demo.service.StudentProfileService;
 import org.springframework.web.bind.annotation.*;
