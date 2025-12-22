@@ -30,11 +30,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(RegisterRequest request) {
-        if (userRepo.existsByEmail(request.getUsername())) {
-            throw new IllegalArgumentException("User already exists");
+        if (userRepo.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
         }
         Role role = roleRepo.findByName("CUSTOMER").orElseThrow();
-        AppUser user = new AppUser(request.getUsername(), request.getUsername(), encoder.encode(request.getPassword()));
+        AppUser user = new AppUser(request.getUsername(), request.getEmail(), encoder.encode(request.getPassword()));
         user.getRoles().add(role);
         userRepo.save(user);
     }
@@ -43,7 +43,8 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
         AppUser user = userRepo.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
-        String token = jwtProvider.generateToken(user.getEmail(), user.getId(), user.getRoles().iterator().next().getName());
-        return new AuthResponse(token, user.getId(), user.getFullName(), user.getEmail());
+        String role = user.getRoles().stream().findFirst().map(Role::getName).orElse("CUSTOMER");
+        String token = jwtProvider.generateToken(user.getEmail(), user.getId(), role);
+        return new AuthResponse(token, user.getId(), user.getUsername(), user.getEmail());
     }
 }
