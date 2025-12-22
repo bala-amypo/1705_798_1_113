@@ -18,7 +18,6 @@ public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordServ
 
     @Override
     public RepeatOffenderRecord recalculateRepeatOffender(Long studentId) {
-        // Demo logic: count cases and mark repeat offender
         RepeatOffenderRecord record = repo.findByStudentId(studentId).orElse(new RepeatOffenderRecord(studentId));
         record.setRepeatCount(record.getRepeatCount() + 1);
         return repo.save(record);

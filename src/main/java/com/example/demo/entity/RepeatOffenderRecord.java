@@ -12,7 +12,6 @@ public class RepeatOffenderRecord {
     private Long studentId;
     private int repeatCount;
 
-    // New fields to support calculator logic
     @ManyToOne
     private StudentProfile studentProfile;
 
@@ -26,7 +25,6 @@ public class RepeatOffenderRecord {
         this.repeatCount = 0;
     }
 
-    // Getters
     public Long getId() { return id; }
     public Long getStudentId() { return studentId; }
     public int getRepeatCount() { return repeatCount; }
@@ -34,7 +32,6 @@ public class RepeatOffenderRecord {
     public int getTotalCases() { return totalCases; }
     public String getFlagSeverity() { return flagSeverity; }
 
-    // Setters
     public void setId(Long id) { this.id = id; }
     public void setStudentId(Long studentId) { this.studentId = studentId; }
     public void setRepeatCount(int repeatCount) { this.repeatCount = repeatCount; }

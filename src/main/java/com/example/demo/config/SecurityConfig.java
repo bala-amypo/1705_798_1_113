@@ -33,14 +33,10 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userDetailsService = userDetailsService;
     }
-
-    // Password encoder for hashing user passwords
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // AuthenticationManager using DAO provider
     @Bean
     public AuthenticationManager authenticationManager(PasswordEncoder encoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -48,8 +44,6 @@ public class SecurityConfig {
         provider.setPasswordEncoder(encoder);
         return new ProviderManager(provider);
     }
-
-    // Enable CORS globally so Swagger UI can call APIs
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -62,8 +56,6 @@ public class SecurityConfig {
             }
         };
     }
-
-    // Security filter chain configuration
     @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
@@ -77,7 +69,6 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
               .anyRequest().authenticated()
       )
       .httpBasic(h -> h.disable());
-// ✅ fixed
 
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
