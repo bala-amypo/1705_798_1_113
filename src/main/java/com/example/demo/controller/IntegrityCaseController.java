@@ -2,42 +2,59 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.IntegrityCase;
 import com.example.demo.service.IntegrityCaseService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cases")
+@RequestMapping("/api/integrity-cases")
 public class IntegrityCaseController {
 
-    private final IntegrityCaseService caseService;
+    private final IntegrityCaseService integrityCaseService;
 
-    public IntegrityCaseController(IntegrityCaseService caseService) {
-        this.caseService = caseService;
+    public IntegrityCaseController(IntegrityCaseService integrityCaseService) {
+        this.integrityCaseService = integrityCaseService;
     }
 
     @PostMapping
-    public IntegrityCase createCase(@RequestBody IntegrityCase integrityCase) {
-        return caseService.createCase(integrityCase);
-    }
+    public ResponseEntity<IntegrityCase> createCase(
+            @RequestBody IntegrityCase integrityCase) {
 
-    @PutMapping("/{id}/status")
-    public IntegrityCase updateCaseStatus(@PathVariable Long id, @RequestParam String status) {
-        return caseService.updateCaseStatus(id, status);
-    }
-
-    @GetMapping("/student/{studentId}")
-    public List<IntegrityCase> getCasesByStudent(@PathVariable Long studentId) {
-        return caseService.getCasesByStudent(studentId);
+        return ResponseEntity.status(201)
+                .body(integrityCaseService.createCase(integrityCase));
     }
 
     @GetMapping("/{id}")
-    public IntegrityCase getCaseById(@PathVariable Long id) {
-        return caseService.getCaseById(id);
+    public ResponseEntity<IntegrityCase> getCaseById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                integrityCaseService.getCaseById(id)
+        );
+    }
+
+    @GetMapping("/student/{studentIdentifier}")
+    public ResponseEntity<List<IntegrityCase>> getCasesByStudent(
+            @PathVariable String studentIdentifier) {
+
+        return ResponseEntity.ok(
+                integrityCaseService.getCasesByStudentIdentifier(studentIdentifier)
+        );
+    }
+
+    @PutMapping("/{id}/resolve")
+    public ResponseEntity<IntegrityCase> resolveCase(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                integrityCaseService.resolveCase(id)
+        );
     }
 
     @GetMapping
-    public List<IntegrityCase> getAllCases() {
-        return caseService.getAllCases();
+    public ResponseEntity<List<IntegrityCase>> getAllCases() {
+        return ResponseEntity.ok(
+                integrityCaseService.getAllCases()
+        );
     }
 }

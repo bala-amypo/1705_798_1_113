@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.RepeatOffenderRecord;
 import com.example.demo.service.RepeatOffenderRecordService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,24 +12,36 @@ import java.util.List;
 @RequestMapping("/api/repeat-offenders")
 public class RepeatOffenderRecordController {
 
-    private final RepeatOffenderRecordService repeatService;
+    private final RepeatOffenderRecordService repeatOffenderRecordService;
 
-    public RepeatOffenderRecordController(RepeatOffenderRecordService repeatService) {
-        this.repeatService = repeatService;
+    public RepeatOffenderRecordController(
+            RepeatOffenderRecordService repeatOffenderRecordService) {
+        this.repeatOffenderRecordService = repeatOffenderRecordService;
     }
 
-    @PostMapping("/refresh/{studentId}")
-    public RepeatOffenderRecord recalculateRepeatOffender(@PathVariable Long studentId) {
-        return repeatService.recalculateRepeatOffender(studentId);
+    @PostMapping
+    public ResponseEntity<RepeatOffenderRecord> createRecord(
+            @RequestBody RepeatOffenderRecord record) {
+
+        RepeatOffenderRecord saved =
+                repeatOffenderRecordService.createRecord(record);
+
+        return ResponseEntity.status(201).body(saved);
     }
 
-    @GetMapping("/student/{studentId}")
-    public RepeatOffenderRecord getRecordForStudent(@PathVariable Long studentId) {
-        return repeatService.getRecordForStudent(studentId);
+    @GetMapping("/{id}")
+    public ResponseEntity<RepeatOffenderRecord> getRecordById(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                repeatOffenderRecordService.getRecordById(id)
+        );
     }
 
     @GetMapping
-    public List<RepeatOffenderRecord> getAllRepeatOffenders() {
-        return repeatService.getAllRepeatOffenders();
+    public ResponseEntity<List<RepeatOffenderRecord>> getAllRecords() {
+        return ResponseEntity.ok(
+                repeatOffenderRecordService.getAllRecords()
+        );
     }
 }
