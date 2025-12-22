@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.PenaltyAction;
 import com.example.demo.repository.PenaltyActionRepository;
 import com.example.demo.service.PenaltyActionService;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,29 +11,32 @@ import java.util.List;
 @Service
 public class PenaltyActionServiceImpl implements PenaltyActionService {
 
-    private final PenaltyActionRepository repo;
+    private final PenaltyActionRepository repository;
 
-    public PenaltyActionServiceImpl(PenaltyActionRepository repo) {
-        this.repo = repo;
+    public PenaltyActionServiceImpl(PenaltyActionRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public PenaltyAction addPenalty(PenaltyAction penalty) {
-        return repo.save(penalty);
+    public PenaltyAction createPenaltyAction(PenaltyAction penaltyAction) {
+        return repository.save(penaltyAction);
     }
 
     @Override
-    public List<PenaltyAction> getPenaltiesForCase(Long caseId) {
-        return repo.findByCaseId(caseId);
+    public PenaltyAction getPenaltyActionById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Penalty not found with id: " + id)
+                );
     }
 
     @Override
-    public PenaltyAction getPenaltyById(Long id) {
-        return repo.findById(id).orElse(null);
+    public List<PenaltyAction> getAllPenaltyActions() {
+        return repository.findAll();
     }
 
     @Override
-    public List<PenaltyAction> getAllPenalties() {
-        return repo.findAll();
+    public List<PenaltyAction> getPenaltyActionsByCaseId(Long caseId) {
+        return repository.findByIntegrityCaseId(caseId);
     }
 }

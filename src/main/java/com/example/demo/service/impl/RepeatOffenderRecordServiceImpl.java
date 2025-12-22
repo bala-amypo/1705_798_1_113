@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.RepeatOffenderRecord;
 import com.example.demo.repository.RepeatOffenderRecordRepository;
 import com.example.demo.service.RepeatOffenderRecordService;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,26 +11,26 @@ import java.util.List;
 @Service
 public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordService {
 
-    private final RepeatOffenderRecordRepository repo;
+    private final RepeatOffenderRecordRepository repository;
 
-    public RepeatOffenderRecordServiceImpl(RepeatOffenderRecordRepository repo) {
-        this.repo = repo;
+    public RepeatOffenderRecordServiceImpl(
+            RepeatOffenderRecordRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public RepeatOffenderRecord recalculateRepeatOffender(Long studentId) {
-        RepeatOffenderRecord record = repo.findByStudentId(studentId).orElse(new RepeatOffenderRecord(studentId));
-        record.setRepeatCount(record.getRepeatCount() + 1);
-        return repo.save(record);
+    public RepeatOffenderRecord createRecord(RepeatOffenderRecord record) {
+        return repository.save(record);
     }
 
     @Override
-    public RepeatOffenderRecord getRecordForStudent(Long studentId) {
-        return repo.findByStudentId(studentId).orElse(null);
+    public RepeatOffenderRecord getRecordById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Record not found"));
     }
 
     @Override
-    public List<RepeatOffenderRecord> getAllRepeatOffenders() {
-        return repo.findAll();
+    public List<RepeatOffenderRecord> getAllRecords() {
+        return repository.findAll();
     }
 }
