@@ -76,7 +76,8 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
               .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
               .anyRequest().authenticated()
       )
-      .httpBasic(basic -> basic.disable()); // ✅ fixed
+      .httpBasic(h -> h.disable());
+// ✅ fixed
 
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
