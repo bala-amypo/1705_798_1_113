@@ -1,56 +1,48 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.IntegrityCase;
-import com.example.demo.entity.StudentProfile;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.IntegrityCaseRepository;
-import com.example.demo.repository.StudentProfileRepository;
 import com.example.demo.service.IntegrityCaseService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class IntegrityCaseServiceImpl implements IntegrityCaseService {
 
-    private final IntegrityCaseRepository caseRepo;
-    private final StudentProfileRepository studentRepo;
+    private final IntegrityCaseRepository repo;
 
-    public IntegrityCaseServiceImpl(IntegrityCaseRepository caseRepo, StudentProfileRepository studentRepo) {
-        this.caseRepo = caseRepo;
-        this.studentRepo = studentRepo;
+    public IntegrityCaseServiceImpl(IntegrityCaseRepository repo) {
+        this.repo = repo;
     }
 
     @Override
     public IntegrityCase createCase(IntegrityCase integrityCase) {
-        if (integrityCase.getStudentProfile() == null || integrityCase.getStudentProfile().getId() == null) {
-            throw new IllegalArgumentException("StudentProfile required");
-        }
-        StudentProfile sp = studentRepo.findById(integrityCase.getStudentProfile().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid StudentProfile"));
-        integrityCase.setStudentProfile(sp);
-        if (integrityCase.getStatus() == null) {
-            integrityCase.setStatus("OPEN");
-        }
-        return caseRepo.save(integrityCase);
+        return repo.save(integrityCase);
     }
 
     @Override
-    public IntegrityCase updateCaseStatus(Long caseId, String newStatus) {
-        IntegrityCase ic = caseRepo.findById(caseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Case not found"));
-        ic.setStatus(newStatus);
-        return caseRepo.save(ic);
+    public IntegrityCase updateCaseStatus(Long id, String status) {
+        IntegrityCase integrityCase = repo.findById(id).orElse(null);
+        if (integrityCase != null) {
+            integrityCase.setStatus(status);
+            return repo.save(integrityCase);
+        }
+        return null;
     }
 
     @Override
     public List<IntegrityCase> getCasesByStudent(Long studentId) {
-        return caseRepo.findByStudentProfile_Id(studentId);
+        return repo.findByStudentId(studentId);
     }
 
     @Override
-    public Optional<IntegrityCase> getCaseById(Long caseId) {
-        return caseRepo.findById(caseId);
+    public IntegrityCase getCaseById(Long id) {
+        return repo.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<IntegrityCase> getAllCases() {
+        return repo.findAll();
     }
 }
