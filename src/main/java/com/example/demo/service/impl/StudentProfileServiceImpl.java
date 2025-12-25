@@ -9,7 +9,6 @@ import com.example.demo.repository.RepeatOffenderRecordRepository;
 import com.example.demo.repository.StudentProfileRepository;
 import com.example.demo.service.StudentProfileService;
 import com.example.demo.util.RepeatOffenderCalculator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     private final RepeatOffenderRecordRepository repeatOffenderRecordRepository;
     private final RepeatOffenderCalculator calculator;
 
-    // >>> ADD THIS CONSTRUCTOR (used in tests)
+    // Constructor required by tests
     public StudentProfileServiceImpl(StudentProfileRepository studentProfileRepository,
                                      IntegrityCaseRepository integrityCaseRepository,
                                      RepeatOffenderRecordRepository repeatOffenderRecordRepository,
@@ -31,16 +30,6 @@ public class StudentProfileServiceImpl implements StudentProfileService {
         this.integrityCaseRepository = integrityCaseRepository;
         this.repeatOffenderRecordRepository = repeatOffenderRecordRepository;
         this.calculator = calculator;
-    }
-
-    @Autowired
-    public StudentProfileServiceImpl(StudentProfileRepository studentProfileRepository,
-                                     IntegrityCaseRepository integrityCaseRepository,
-                                     RepeatOffenderRecordRepository repeatOffenderRecordRepository,
-                                     RepeatOffenderCalculator calculator,
-                                     // dummy to avoid conflict if Spring wants default
-                                     Object... unused) {
-        this(studentProfileRepository, integrityCaseRepository, repeatOffenderRecordRepository, calculator);
     }
 
     @Override
@@ -64,6 +53,7 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     public StudentProfile updateRepeatOffenderStatus(Long studentId) {
         StudentProfile student = getStudentById(studentId);
         List<IntegrityCase> cases = integrityCaseRepository.findByStudentProfile(student);
+
         RepeatOffenderRecord record = calculator.computeRepeatOffenderRecord(student, cases);
 
         repeatOffenderRecordRepository.findByStudentProfile(student)
