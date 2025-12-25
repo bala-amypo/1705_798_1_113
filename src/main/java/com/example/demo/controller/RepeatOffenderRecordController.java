@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/repeat-offenders")
+@RequestMapping("/api/repeat-offender-records")
 @RequiredArgsConstructor
-public class RepeatOffenderController {
+public class RepeatOffenderRecordController {
     
     private final RepeatOffenderRecordService repeatOffenderRecordService;
     
