@@ -1,35 +1,30 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "evidence_records")
-@Data
 public class EvidenceRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_id", nullable = false)
+
+    @ManyToOne(optional = false)
     private IntegrityCase integrityCase;
-    
-    @Column(name = "evidence_type", nullable = false)
+
     private String evidenceType;
-    
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-    
-    @Column(name = "submitted_by", nullable = false)
     private String submittedBy;
-    
-    @Column(name = "submitted_at")
     private LocalDateTime submittedAt = LocalDateTime.now();
-    
-    @PrePersist
-    protected void onCreate() {
-        submittedAt = LocalDateTime.now();
-    }
+
+    public EvidenceRecord() {}
+
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public IntegrityCase getIntegrityCase() { return integrityCase; }
+    public void setIntegrityCase(IntegrityCase integrityCase) { this.integrityCase = integrityCase; }
+    public LocalDateTime getSubmittedAt() { return submittedAt; }
 }
