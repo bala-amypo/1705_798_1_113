@@ -1,18 +1,20 @@
-package com.example.demo.util;
+package com.example.demo.entity;
 
-public class RepeatOffenderCalculator {
+import jakarta.persistence.*;
 
-    public RepeatOffenderRecord computeRepeatOffenderRecord(
-            StudentProfile student, List<IntegrityCase> cases) {
+@Entity
+@Table(name = "repeat_offender_records")
+public class RepeatOffenderRecord {
 
-        RepeatOffenderRecord r = new RepeatOffenderRecord();
-        r.setStudentProfile(student);
-        r.setTotalCases(cases.size());
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        if (cases.size() >= 4) r.setFlagSeverity("HIGH");
-        else if (cases.size() == 2) r.setFlagSeverity("MEDIUM");
-        else r.setFlagSeverity("LOW");
+    @OneToOne
+    private StudentProfile student;
 
-        return r;
-    }
+    private int totalCases;
+    private String riskLevel;
+
+    // getters & setters
 }
