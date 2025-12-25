@@ -5,10 +5,12 @@ import com.example.demo.entity.StudentProfile;
 import com.example.demo.repository.IntegrityCaseRepository;
 import com.example.demo.repository.StudentProfileRepository;
 import com.example.demo.service.IntegrityCaseService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class IntegrityCaseServiceImpl implements IntegrityCaseService {
 
     private final IntegrityCaseRepository caseRepo;
@@ -58,7 +60,7 @@ public class IntegrityCaseServiceImpl implements IntegrityCaseService {
 
     @Override
     public List<IntegrityCase> getCasesByStatus(String status) {
-        return integrityCaseRepository.findByStatus(status);
+        return caseRepo.findByStatus(status); // fixed variable name
     }
 
 }

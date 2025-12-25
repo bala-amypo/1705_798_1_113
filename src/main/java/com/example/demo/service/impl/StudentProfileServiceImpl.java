@@ -8,9 +8,11 @@ import com.example.demo.repository.RepeatOffenderRecordRepository;
 import com.example.demo.repository.StudentProfileRepository;
 import com.example.demo.service.StudentProfileService;
 import com.example.demo.util.RepeatOffenderCalculator;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class StudentProfileServiceImpl implements StudentProfileService {
 
     private final StudentProfileRepository studentRepo;
@@ -38,7 +40,7 @@ public class StudentProfileServiceImpl implements StudentProfileService {
 
     @Override
     public StudentProfile getStudentByStudentId(String studentId) {
-        return studentProfileRepository.findAll()
+        return studentRepo.findAll()
                 .stream()
                 .filter(s -> studentId.equals(s.getStudentId()))
                 .findFirst()
@@ -60,9 +62,8 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     public StudentProfile updateRepeatOffenderStatus(Long studentId) {
         StudentProfile student = getStudentById(studentId);
 
-        var cases = caseRepo.findByStudentProfile(student);
-        RepeatOffenderRecord record =
-                calculator.computeRepeatOffenderRecord(student, cases);
+        var cases = caseRepo.findByStudentProfile(student); // make sure this method exists
+        RepeatOffenderRecord record = calculator.computeRepeatOffenderRecord(student, cases);
 
         student.setRepeatOffender(record.getTotalCases() >= 2);
         recordRepo.save(record);
