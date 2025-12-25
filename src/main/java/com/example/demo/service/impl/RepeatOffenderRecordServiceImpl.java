@@ -1,62 +1,55 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
+import com.example.demo.entity.RepeatOffenderRecord;
+import com.example.demo.entity.StudentProfile;
 import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.*;
+import com.example.demo.repository.RepeatOffenderRecordRepository;
+import com.example.demo.repository.StudentProfileRepository;
 import com.example.demo.service.RepeatOffenderRecordService;
-import com.example.demo.util.RepeatOffenderCalculator;
-
-import java.time.LocalDate;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
-@Service
-public class RepeatOffenderRecordServiceImpl
-        implements RepeatOffenderRecordService {
+import java.util.List;
 
-    private final RepeatOffenderRecordRepository repeatOffenderRecordRepository;
-    private final StudentProfileRepository studentProfileRepository;
-    private final IntegrityCaseRepository integrityCaseRepository;
+@Service
+public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordService {
+
+    private final RepeatOffenderRecordRepository recordRepo;
+    private final StudentProfileRepository studentRepo;
 
     public RepeatOffenderRecordServiceImpl(
-            RepeatOffenderRecordRepository repeatOffenderRecordRepository,
-            StudentProfileRepository studentProfileRepository,
-            IntegrityCaseRepository integrityCaseRepository) {
+            RepeatOffenderRecordRepository recordRepo,
+            StudentProfileRepository studentRepo) {
 
-        this.repeatOffenderRecordRepository = repeatOffenderRecordRepository;
-        this.studentProfileRepository = studentProfileRepository;
-        this.integrityCaseRepository = integrityCaseRepository;
+        this.recordRepo = recordRepo;
+        this.studentRepo = studentRepo;
     }
 
     @Override
-    public RepeatOffenderRecord updateOrCreateRecord(Long studentId) {
-
-        StudentProfile student = studentProfileRepository.findById(studentId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Student not found"));
-
-        RepeatOffenderRecord record =
-                repeatOffenderRecordRepository
-                        .findByStudentProfileId(studentId)
-                        .orElse(new RepeatOffenderRecord());
-
-        record.setStudentProfile(student);
-
-        int offences = integrityCaseRepository
-                .findByStudentProfileId(studentId)
-                .size();
-
-        record.setOffenceCount(offences);
-        record.setLastOffenceDate(LocalDate.now());
-        record.setSeverityLevel(
-                RepeatOffenderCalculator.calculateSeverity(record));
-
-        return repeatOffenderRecordRepository.save(record);
+    public RepeatOffenderRecord getRecordById(Long id) {
+        return recordRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Record not found with id: " + id));
     }
 
     @Override
     public List<RepeatOffenderRecord> getAllRecords() {
-        return repeatOffenderRecordRepository.findAll();
+        return recordRepo.findAll();
+    }
+
+    @Override
+    public List<RepeatOffenderRecord> getRecordsByStudentId(Long studentId) {
+        StudentProfile student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+        return recordRepo.findByStudentProfile(student);
+    }
+
+    @Override
+    public RepeatOffenderRecord saveRecord(RepeatOffenderRecord record) {
+        return recordRepo.save(record);
+    }
+
+    @Override
+    public void deleteRecord(Long id) {
+        RepeatOffenderRecord record = getRecordById(id);
+        recordRepo.delete(record);
     }
 }

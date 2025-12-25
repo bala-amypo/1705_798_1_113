@@ -1,10 +1,8 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "repeat_offender_records")
 public class RepeatOffenderRecord {
 
     @Id
@@ -12,19 +10,19 @@ public class RepeatOffenderRecord {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "student_id")
     private StudentProfile studentProfile;
 
-    private int offenceCount;
+    private int totalCases;      // ADD THIS
+    private int offenceCount;    // used in calculator
+    private String severity;     // ADD THIS
 
-    private String severityLevel;
-
-    private LocalDate lastOffenceDate;
-
-    // ---------- getters & setters ----------
-
+    // Getters and setters
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public StudentProfile getStudentProfile() {
@@ -35,6 +33,14 @@ public class RepeatOffenderRecord {
         this.studentProfile = studentProfile;
     }
 
+    public int getTotalCases() {
+        return totalCases;
+    }
+
+    public void setTotalCases(int totalCases) {
+        this.totalCases = totalCases;
+    }
+
     public int getOffenceCount() {
         return offenceCount;
     }
@@ -43,23 +49,11 @@ public class RepeatOffenderRecord {
         this.offenceCount = offenceCount;
     }
 
-    public String getSeverityLevel() {
-        return severityLevel;
+    public String getSeverity() {
+        return severity;
     }
 
-    public void setSeverityLevel(String severityLevel) {
-        this.severityLevel = severityLevel;
-    }
-
-    public LocalDate getLastOffenceDate() {
-        return lastOffenceDate;
-    }
-    public int getTotalCases() {
-    return this.totalCases; // example field
-}
-
-
-    public void setLastOffenceDate(LocalDate lastOffenceDate) {
-        this.lastOffenceDate = lastOffenceDate;
+    public void setSeverity(String severity) {
+        this.severity = severity;
     }
 }

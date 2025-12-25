@@ -9,7 +9,7 @@ import java.util.List;
 public interface IntegrityCaseRepository extends JpaRepository<IntegrityCase, Long> {
 
     List<IntegrityCase> findByStudentProfile_Id(Long studentId);
-
+    List<IntegrityCase> findByStudentProfileId(Long studentProfileId);
     // Simulated HQL methods (Mockito-backed in tests)
     List<IntegrityCase> findByStudentIdentifier(String studentIdentifier);
 
