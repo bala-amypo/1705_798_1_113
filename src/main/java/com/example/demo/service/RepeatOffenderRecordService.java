@@ -4,10 +4,6 @@ import com.example.demo.entity.RepeatOffenderRecord;
 import java.util.List;
 
 public interface RepeatOffenderRecordService {
-
-    RepeatOffenderRecord createRecord(RepeatOffenderRecord record);
-
-    RepeatOffenderRecord getRecordById(Long id);
-
+    RepeatOffenderRecord updateOrCreateRecord(Long studentId);
     List<RepeatOffenderRecord> getAllRecords();
 }

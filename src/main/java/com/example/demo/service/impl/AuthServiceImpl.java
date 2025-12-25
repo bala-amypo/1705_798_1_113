@@ -1,52 +1,81 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.dto.JwtResponse;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.RegisterRequest;
+import com.example.demo.entity.AppUser;
+import com.example.demo.entity.Role;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.AppUserRepository;
+import com.example.demo.repository.RoleRepository;
+import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.service.AuthService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
-    private final AppUserRepository userRepo;
-    private final RoleRepository roleRepo;
-    private final PasswordEncoder encoder;
-    private final AuthenticationManager authManager;
-    private final JwtTokenProvider jwt;
-
-    public AuthServiceImpl(
-            AppUserRepository u,
-            RoleRepository r,
-            PasswordEncoder e,
-            AuthenticationManager a,
-            JwtTokenProvider j) {
-        userRepo = u;
-        roleRepo = r;
-        encoder = e;
-        authManager = a;
-        jwt = j;
-    }
-
-    public void register(RegisterRequest req) {
-        if (userRepo.existsByEmail(req.getEmail()))
-            throw new IllegalArgumentException("Duplicate email");
-
-        Role role = roleRepo.findByName(req.getRole())
-                .orElseThrow(() -> new IllegalArgumentException("Role not found"));
-
-        AppUser user = new AppUser();
-        user.setEmail(req.getEmail());
-        user.setFullName(req.getFullName());
-        user.setPassword(encoder.encode(req.getPassword()));
-        user.getRoles().add(role);
-
-        userRepo.save(user);
-    }
-
-    public JwtResponse login(LoginRequest req) {
-        Authentication auth = authManager.authenticate(
+    
+    private final AppUserRepository appUserRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    
+    @Override
+    @Transactional
+    public JwtResponse login(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        req.getEmail(), req.getPassword()));
-
-        AppUser user = userRepo.findByEmail(req.getEmail())
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                )
+        );
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        
+        AppUser user = appUserRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        String role = user.getRoles().iterator().next().getName();
-        String token = jwt.generateToken(auth, user.getId(), user.getEmail(), role);
-
-        return new JwtResponse(token, user.getId(), user.getEmail(), role);
+        
+        String role = user.getRoles().stream()
+                .findFirst()
+                .map(Role::getName)
+                .orElse("USER");
+        
+        String jwt = jwtTokenProvider.generateToken(authentication, user.getId(), user.getEmail(), role);
+        
+        JwtResponse response = new JwtResponse();
+        response.setToken(jwt);
+        response.setId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setRole(role);
+        
+        return response;
+    }
+    
+    @Override
+    @Transactional
+    public void register(RegisterRequest registerRequest) {
+        if (appUserRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+        
+        AppUser user = new AppUser();
+        user.setEmail(registerRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setFullName(registerRequest.getFullName());
+        
+        Role role = roleRepository.findByName(registerRequest.getRole())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + registerRequest.getRole()));
+        
+        user.getRoles().add(role);
+        appUserRepository.save(user);
     }
 }

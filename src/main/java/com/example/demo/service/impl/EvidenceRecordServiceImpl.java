@@ -1,42 +1,35 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.EvidenceRecord;
+import com.example.demo.entity.IntegrityCase;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EvidenceRecordRepository;
+import com.example.demo.repository.IntegrityCaseRepository;
 import com.example.demo.service.EvidenceRecordService;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class EvidenceRecordServiceImpl implements EvidenceRecordService {
-
-    private final EvidenceRecordRepository repository;
-
-    public EvidenceRecordServiceImpl(EvidenceRecordRepository repository) {
-        this.repository = repository;
-    }
-
+    
+    private final EvidenceRecordRepository evidenceRecordRepository;
+    private final IntegrityCaseRepository integrityCaseRepository;
+    
     @Override
-    public EvidenceRecord createEvidenceRecord(EvidenceRecord evidenceRecord) {
-        return repository.save(evidenceRecord);
-    }
-
-    @Override
-    public EvidenceRecord getEvidenceRecordById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Evidence not found with id: " + id)
-                );
-    }
-
-    @Override
-    public List<EvidenceRecord> getAllEvidenceRecords() {
-        return repository.findAll();
-    }
-
-    @Override
-    public List<EvidenceRecord> getEvidenceRecordsByCaseId(Long caseId) {
-        return repository.findByIntegrityCaseId(caseId);
+    @Transactional
+    public EvidenceRecord submitEvidence(EvidenceRecord evidenceRecord) {
+        if (evidenceRecord.getIntegrityCase() == null || evidenceRecord.getIntegrityCase().getId() == null) {
+            throw new IllegalArgumentException("Integrity case must be specified");
+        }
+        
+        IntegrityCase integrityCase = integrityCaseRepository.findById(
+                evidenceRecord.getIntegrityCase().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Case not found with id: " + evidenceRecord.getIntegrityCase().getId()));
+        
+        evidenceRecord.setIntegrityCase(integrityCase);
+        return evidenceRecordRepository.save(evidenceRecord);
     }
 }

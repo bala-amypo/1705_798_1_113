@@ -1,36 +1,38 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.RepeatOffenderRecord;
-import com.example.demo.repository.RepeatOffenderRecordRepository;
+import com.example.demo.entity.*;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.*;
 import com.example.demo.service.RepeatOffenderRecordService;
-
+import com.example.demo.util.RepeatOffenderCalculator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordService {
-
-    private final RepeatOffenderRecordRepository repository;
-
-    public RepeatOffenderRecordServiceImpl(
-            RepeatOffenderRecordRepository repository) {
-        this.repository = repository;
-    }
-
+    
+    private final StudentProfileRepository studentProfileRepository;
+    private final IntegrityCaseRepository integrityCaseRepository;
+    private final RepeatOffenderRecordRepository repeatOffenderRecordRepository;
+    private final RepeatOffenderCalculator calculator;
+    
     @Override
-    public RepeatOffenderRecord createRecord(RepeatOffenderRecord record) {
-        return repository.save(record);
+    @Transactional
+    public RepeatOffenderRecord updateOrCreateRecord(Long studentId) {
+        StudentProfile student = studentProfileRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+        
+        List<IntegrityCase> cases = integrityCaseRepository.findByStudentProfile(student);
+        RepeatOffenderRecord record = calculator.computeRepeatOffenderRecord(student, cases);
+        
+        return repeatOffenderRecordRepository.save(record);
     }
-
-    @Override
-    public RepeatOffenderRecord getRecordById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Record not found"));
-    }
-
+    
     @Override
     public List<RepeatOffenderRecord> getAllRecords() {
-        return repository.findAll();
+        return repeatOffenderRecordRepository.findAll();
     }
 }
