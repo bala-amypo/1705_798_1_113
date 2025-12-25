@@ -1,33 +1,31 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "repeat_offender_records")
-@Data
 public class RepeatOffenderRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false, unique = true)
+
+    @ManyToOne(optional = false)
     private StudentProfile studentProfile;
-    
-    @Column(name = "total_cases", nullable = false)
-    private Integer totalCases = 0;
-    
-    @Column(name = "flag_severity", nullable = false)
-    private String flagSeverity = "LOW";
-    
-    @Column(name = "last_updated")
-    private LocalDateTime lastUpdated = LocalDateTime.now();
-    
-    @PrePersist
-    @PreUpdate
-    protected void onUpdate() {
-        lastUpdated = LocalDateTime.now();
-    }
+
+    private Integer totalCases;
+    private LocalDate firstIncidentDate;
+    private String flagSeverity;
+
+    public RepeatOffenderRecord() {}
+
+    // getters & setters
+    public Long getId() { return id; }
+    public StudentProfile getStudentProfile() { return studentProfile; }
+    public void setStudentProfile(StudentProfile studentProfile) { this.studentProfile = studentProfile; }
+    public Integer getTotalCases() { return totalCases; }
+    public void setTotalCases(Integer totalCases) { this.totalCases = totalCases; }
+    public String getFlagSeverity() { return flagSeverity; }
+    public void setFlagSeverity(String flagSeverity) { this.flagSeverity = flagSeverity; }
 }
