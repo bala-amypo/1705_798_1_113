@@ -72,6 +72,6 @@ public class AuthServiceImpl implements AuthService {
                 auth, user.getId(), user.getEmail(), role
         );
 
-        return new JwtResponse(token, user.getId(), user.getEmail(), role);
+        return new JwtResponse(token, user.getEmail(), role);
     }
 }
