@@ -28,4 +28,6 @@ public class RepeatOffenderRecord {
     public void setTotalCases(Integer totalCases) { this.totalCases = totalCases; }
     public String getFlagSeverity() { return flagSeverity; }
     public void setFlagSeverity(String flagSeverity) { this.flagSeverity = flagSeverity; }
+    public void setFirstIncidentDate(LocalDate firstIncidentDate) { this.firstIncidentDate = firstIncidentDate; }
+
 }
