@@ -2,34 +2,30 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.EvidenceRecord;
 import com.example.demo.entity.IntegrityCase;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EvidenceRecordRepository;
 import com.example.demo.repository.IntegrityCaseRepository;
 import com.example.demo.service.EvidenceRecordService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
 public class EvidenceRecordServiceImpl implements EvidenceRecordService {
-    
-    private final EvidenceRecordRepository evidenceRecordRepository;
-    private final IntegrityCaseRepository integrityCaseRepository;
-    
+
+    private final EvidenceRecordRepository evidenceRepo;
+    private final IntegrityCaseRepository caseRepo;
+
+    public EvidenceRecordServiceImpl(
+            EvidenceRecordRepository evidenceRepo,
+            IntegrityCaseRepository caseRepo) {
+
+        this.evidenceRepo = evidenceRepo;
+        this.caseRepo = caseRepo;
+    }
+
     @Override
-    @Transactional
-    public EvidenceRecord submitEvidence(EvidenceRecord evidenceRecord) {
-        if (evidenceRecord.getIntegrityCase() == null || evidenceRecord.getIntegrityCase().getId() == null) {
-            throw new IllegalArgumentException("Integrity case must be specified");
-        }
-        
-        IntegrityCase integrityCase = integrityCaseRepository.findById(
-                evidenceRecord.getIntegrityCase().getId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Case not found with id: " + evidenceRecord.getIntegrityCase().getId()));
-        
-        evidenceRecord.setIntegrityCase(integrityCase);
-        return evidenceRecordRepository.save(evidenceRecord);
+    public EvidenceRecord submitEvidence(EvidenceRecord evidence) {
+        IntegrityCase c = caseRepo.findById(
+                evidence.getIntegrityCase().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Case not found"));
+
+        evidence.setIntegrityCase(c);
+        return evidenceRepo.save(evidence);
     }
 }

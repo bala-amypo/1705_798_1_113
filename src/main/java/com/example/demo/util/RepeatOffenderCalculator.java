@@ -3,40 +3,39 @@ package com.example.demo.util;
 import com.example.demo.entity.IntegrityCase;
 import com.example.demo.entity.RepeatOffenderRecord;
 import com.example.demo.entity.StudentProfile;
-import org.springframework.stereotype.Component;
+
+import java.util.Comparator;
 import java.util.List;
 
-@Component
 public class RepeatOffenderCalculator {
-    
-    public RepeatOffenderRecord computeRepeatOffenderRecord(StudentProfile student, List<IntegrityCase> cases) {
+
+    public RepeatOffenderRecord computeRepeatOffenderRecord(
+            StudentProfile student,
+            List<IntegrityCase> cases) {
+
         RepeatOffenderRecord record = new RepeatOffenderRecord();
         record.setStudentProfile(student);
-        record.setTotalCases(cases.size());
-        record.setFlagSeverity(calculateSeverity(cases.size()));
-        
-        return record;
-    }
-    
-    private String calculateSeverity(int caseCount) {
-        if (caseCount == 0) {
-            return "NONE";
-        } else if (caseCount == 1) {
-            return "LOW";
-        } else if (caseCount == 2) {
-            return "MEDIUM";
-        } else if (caseCount == 3) {
-            return "HIGH";
+
+        int total = cases == null ? 0 : cases.size();
+        record.setTotalCases(total);
+
+        if (total <= 1) {
+            record.setFlagSeverity("LOW");
+        } else if (total == 2) {
+            record.setFlagSeverity("MEDIUM");
         } else {
-            return "CRITICAL";
+            record.setFlagSeverity("HIGH");
         }
-    }
-    
-    public boolean isRepeatOffender(List<IntegrityCase> cases) {
-        return cases.size() >= 2;
-    }
-    
-    public int calculateOffenseScore(List<IntegrityCase> cases) {
-        return cases.size() * 10; // Simple scoring system
+
+        if (cases != null && !cases.isEmpty()) {
+            record.setFirstIncidentDate(
+                    cases.stream()
+                         .map(IntegrityCase::getIncidentDate)
+                         .min(Comparator.naturalOrder())
+                         .orElse(null)
+            );
+        }
+
+        return record;
     }
 }
