@@ -1,23 +1,24 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
-@Table(name = "student_profiles")
+@Table(name = "students")
 public class StudentProfile {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String studentId;
-    private String name;
-    private String email;
-    private String program;
+    private String studentName;
+    private String registerNumber;
 
-    @Column(nullable = false)
-    private Integer yearLevel;
-
-    private Boolean repeatOffender = false;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "studentProfile")
-    private List<IntegrityCase> integrityCases = new ArrayList<>();
+    @OneToMany(mappedBy = "student")
+    private List<IntegrityCase> cases;
 
     // getters & setters
 }
