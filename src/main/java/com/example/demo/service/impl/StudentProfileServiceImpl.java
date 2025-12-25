@@ -16,18 +16,32 @@ import java.util.List;
 
 @Service
 public class StudentProfileServiceImpl implements StudentProfileService {
-    
+
+    private final StudentProfileRepository studentProfileRepository;
+    private final IntegrityCaseRepository integrityCaseRepository;
+    private final RepeatOffenderRecordRepository repeatOffenderRecordRepository;
+    private final RepeatOffenderCalculator calculator;
+
+    // >>> ADD THIS CONSTRUCTOR (used in tests)
+    public StudentProfileServiceImpl(StudentProfileRepository studentProfileRepository,
+                                     IntegrityCaseRepository integrityCaseRepository,
+                                     RepeatOffenderRecordRepository repeatOffenderRecordRepository,
+                                     RepeatOffenderCalculator calculator) {
+        this.studentProfileRepository = studentProfileRepository;
+        this.integrityCaseRepository = integrityCaseRepository;
+        this.repeatOffenderRecordRepository = repeatOffenderRecordRepository;
+        this.calculator = calculator;
+    }
+
     @Autowired
-    private StudentProfileRepository studentProfileRepository;
-    
-    @Autowired
-    private IntegrityCaseRepository integrityCaseRepository;
-    
-    @Autowired
-    private RepeatOffenderRecordRepository repeatOffenderRecordRepository;
-    
-    @Autowired
-    private RepeatOffenderCalculator calculator;
+    public StudentProfileServiceImpl(StudentProfileRepository studentProfileRepository,
+                                     IntegrityCaseRepository integrityCaseRepository,
+                                     RepeatOffenderRecordRepository repeatOffenderRecordRepository,
+                                     RepeatOffenderCalculator calculator,
+                                     // dummy to avoid conflict if Spring wants default
+                                     Object... unused) {
+        this(studentProfileRepository, integrityCaseRepository, repeatOffenderRecordRepository, calculator);
+    }
 
     @Override
     public StudentProfile createStudent(StudentProfile student) {
@@ -48,20 +62,16 @@ public class StudentProfileServiceImpl implements StudentProfileService {
 
     @Override
     public StudentProfile updateRepeatOffenderStatus(Long studentId) {
-        StudentProfile student = studentProfileRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
-        
+        StudentProfile student = getStudentById(studentId);
         List<IntegrityCase> cases = integrityCaseRepository.findByStudentProfile(student);
-        RepeatOffenderRecord existingRecord = repeatOffenderRecordRepository
-                .findByStudentProfile(student).orElse(null);
-        
         RepeatOffenderRecord record = calculator.computeRepeatOffenderRecord(student, cases);
-        
-        if (existingRecord == null) {
-            record.setStudentProfile(student);
-            repeatOffenderRecordRepository.save(record);
-        }
-        
+
+        repeatOffenderRecordRepository.findByStudentProfile(student)
+                .orElseGet(() -> {
+                    record.setStudentProfile(student);
+                    return repeatOffenderRecordRepository.save(record);
+                });
+
         student.setRepeatOffender(record.getTotalCases() >= 2);
         return studentProfileRepository.save(student);
     }
