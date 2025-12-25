@@ -21,6 +21,8 @@
     <properties>
         <java.version>17</java.version>
         <jjwt.version>0.11.5</jjwt.version>
+        <!-- Add springdoc version property -->
+        <springdoc.version>2.6.0</springdoc.version>
     </properties>
     
     <dependencies>
@@ -73,6 +75,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <!-- Exclude JUnit 4 to avoid conflicts -->
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -88,6 +97,14 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Mockito extension for TestNG -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-testng</artifactId>
+            <version>0.4.8</version>
             <scope>test</scope>
         </dependency>
         
@@ -97,11 +114,13 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-		<dependency>
-    	<groupId>org.springdoc</groupId>
-	    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-	    <version>2.8.14</version>
-		</dependency>
+        
+        <!-- OpenAPI/Swagger - FIXED VERSION -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version> <!-- Changed from 2.8.14 to 2.6.0 -->
+        </dependency>
     </dependencies>
     
     <build>
@@ -116,6 +135,18 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <!-- TestNG Maven Plugin for proper test execution -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+                <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                 </configuration>
             </plugin>
         </plugins>
