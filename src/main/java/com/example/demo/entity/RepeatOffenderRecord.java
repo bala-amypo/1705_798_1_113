@@ -54,6 +54,10 @@ public class RepeatOffenderRecord {
     public LocalDate getLastOffenceDate() {
         return lastOffenceDate;
     }
+    public int getTotalCases() {
+    return this.totalCases; // example field
+}
+
 
     public void setLastOffenceDate(LocalDate lastOffenceDate) {
         this.lastOffenceDate = lastOffenceDate;
