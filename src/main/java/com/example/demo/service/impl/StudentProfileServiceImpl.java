@@ -1,59 +1,46 @@
-package com.example.demo.service.impl;
-
-import com.example.demo.entity.StudentProfile;
-import com.example.demo.repository.StudentProfileRepository;
-import com.example.demo.service.StudentProfileService;
-
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
 @Service
 public class StudentProfileServiceImpl implements StudentProfileService {
 
-    private final StudentProfileRepository repository;
+    private final StudentProfileRepository repo;
+    private final IntegrityCaseRepository caseRepo;
+    private final RepeatOffenderRecordRepository recordRepo;
+    private final RepeatOffenderCalculator calc;
 
-    public StudentProfileServiceImpl(StudentProfileRepository repository) {
-        this.repository = repository;
+    public StudentProfileServiceImpl(
+            StudentProfileRepository r,
+            IntegrityCaseRepository c,
+            RepeatOffenderRecordRepository rr,
+            RepeatOffenderCalculator calc) {
+        this.repo = r;
+        this.caseRepo = c;
+        this.recordRepo = rr;
+        this.calc = calc;
     }
 
-    @Override
-    public StudentProfile createStudent(StudentProfile studentProfile) {
-        return repository.save(studentProfile);
+    public StudentProfile createStudent(StudentProfile s) {
+        s.setRepeatOffender(false);
+        return repo.save(s);
     }
 
-    @Override
     public StudentProfile getStudentById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Student not found with id: " + id)
-                );
+        return repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
     }
 
-    @Override
-    public StudentProfile updateRepeatOffenderStatus(Long id) {
-        StudentProfile student = repository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Student not found with id: " + id)
-                );
-
-        student.setRepeatOffender(!student.isRepeatOffender());
-
-        return repository.save(student);
-    }
-
-    @Override
     public List<StudentProfile> getAllStudents() {
-        return repository.findAll();
+        return repo.findAll();
     }
 
-    @Override
-    public StudentProfile getStudentByStudentIdentifier(String studentIdentifier) {
-        return repository.findByStudentIdentifier(studentIdentifier)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Student not found with studentIdentifier: " + studentIdentifier
-                        )
-                );
+    public StudentProfile updateRepeatOffenderStatus(Long id) {
+        StudentProfile s = getStudentById(id);
+        List<IntegrityCase> cases = caseRepo.findByStudentProfile(s);
+
+        RepeatOffenderRecord rec =
+                calc.computeRepeatOffenderRecord(s, cases);
+
+        s.setRepeatOffender(rec.getTotalCases() >= 2);
+        recordRepo.save(rec);
+
+        return repo.save(s);
     }
 }
