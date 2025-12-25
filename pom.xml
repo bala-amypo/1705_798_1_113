@@ -121,6 +121,12 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version> <!-- Changed from 2.8.14 to 2.6.0 -->
         </dependency>
+		<!-- Add this to your dependencies section -->
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <scope>runtime</scope>
+</dependency>
     </dependencies>
     
     <build>
