@@ -1,34 +1,30 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.PenaltyAction;
 import com.example.demo.entity.IntegrityCase;
-import com.example.demo.repository.PenaltyActionRepository;
+import com.example.demo.entity.PenaltyAction;
 import com.example.demo.repository.IntegrityCaseRepository;
+import com.example.demo.repository.PenaltyActionRepository;
 import com.example.demo.service.PenaltyActionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PenaltyActionServiceImpl implements PenaltyActionService {
-
-    private final PenaltyActionRepository penaltyRepo;
-    private final IntegrityCaseRepository caseRepo;
-
-    public PenaltyActionServiceImpl(
-            PenaltyActionRepository penaltyRepo,
-            IntegrityCaseRepository caseRepo) {
-
-        this.penaltyRepo = penaltyRepo;
-        this.caseRepo = caseRepo;
-    }
+    
+    @Autowired
+    private PenaltyActionRepository penaltyActionRepository;
+    
+    @Autowired
+    private IntegrityCaseRepository integrityCaseRepository;
 
     @Override
     public PenaltyAction addPenalty(PenaltyAction penalty) {
-        IntegrityCase c = caseRepo.findById(
-                penalty.getIntegrityCase().getId())
+        IntegrityCase caseEntity = integrityCaseRepository.findById(penalty.getIntegrityCase().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Case not found"));
-
-        c.setStatus("UNDER_REVIEW");
-        caseRepo.save(c);
-
-        penalty.setIntegrityCase(c);
-        return penaltyRepo.save(penalty);
+        if ("OPEN".equals(caseEntity.getStatus())) {
+            caseEntity.setStatus("UNDER_REVIEW");
+            integrityCaseRepository.save(caseEntity);
+        }
+        return penaltyActionRepository.save(penalty);
     }
 }
