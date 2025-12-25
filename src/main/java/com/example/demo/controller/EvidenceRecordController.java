@@ -47,11 +47,3 @@ public class EvidenceRecordController {
         return evidenceRecordRepository.findAll();
     }
 }
-``]
-
----
-
-## 4. PenaltyActionController (`/api/penalties`)
-
-`src/main/java/com/example/demo/controller/PenaltyActionController.java`
-
