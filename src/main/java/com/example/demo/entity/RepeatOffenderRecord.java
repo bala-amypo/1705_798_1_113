@@ -1,15 +1,10 @@
-package com.example.demo.service.impl;
+package com.example.demo.entity;
 
-import com.example.demo.entity.*;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.repository.*;
-import com.example.demo.service.RepeatOffenderRecordService;
-import com.example.demo.util.RepeatOffenderCalculator;
-
-import java.util.List;   
-import org.springframework.stereotype.Service;
+import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
+@Table(name = "repeat_offender_records")
 public class RepeatOffenderRecord {
 
     @Id
@@ -17,19 +12,50 @@ public class RepeatOffenderRecord {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "student_id")
     private StudentProfile studentProfile;
 
-    private Integer totalCases;
-    private String flagSeverity;
+    private int offenceCount;
 
-    // ✅ ADD
-    private LocalDate firstIncidentDate;
+    private String severityLevel;
 
-    public void setFirstIncidentDate(LocalDate firstIncidentDate) {
-        this.firstIncidentDate = firstIncidentDate;
+    private LocalDate lastOffenceDate;
+
+    // ---------- getters & setters ----------
+
+    public Long getId() {
+        return id;
     }
 
-    public Integer getTotalCases() { return totalCases; }
-    public String getFlagSeverity() { return flagSeverity; }
-    public StudentProfile getStudentProfile() { return studentProfile; }
+    public StudentProfile getStudentProfile() {
+        return studentProfile;
+    }
+
+    public void setStudentProfile(StudentProfile studentProfile) {
+        this.studentProfile = studentProfile;
+    }
+
+    public int getOffenceCount() {
+        return offenceCount;
+    }
+
+    public void setOffenceCount(int offenceCount) {
+        this.offenceCount = offenceCount;
+    }
+
+    public String getSeverityLevel() {
+        return severityLevel;
+    }
+
+    public void setSeverityLevel(String severityLevel) {
+        this.severityLevel = severityLevel;
+    }
+
+    public LocalDate getLastOffenceDate() {
+        return lastOffenceDate;
+    }
+
+    public void setLastOffenceDate(LocalDate lastOffenceDate) {
+        this.lastOffenceDate = lastOffenceDate;
+    }
 }

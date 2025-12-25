@@ -1,61 +1,62 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.RepeatOffenderRecord;
-import com.example.demo.entity.StudentProfile;
-import com.example.demo.repository.IntegrityCaseRepository;
-import com.example.demo.repository.RepeatOffenderRecordRepository;
-import com.example.demo.repository.StudentProfileRepository;
+import com.example.demo.entity.*;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.*;
 import com.example.demo.service.RepeatOffenderRecordService;
 import com.example.demo.util.RepeatOffenderCalculator;
 
-public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordService {
+import java.time.LocalDate;
+import java.util.List;
 
-    private final StudentProfileRepository studentRepo;
-    private final IntegrityCaseRepository caseRepo;
-    private final RepeatOffenderRecordRepository recordRepo;
-    private final RepeatOffenderCalculator calculator;
+import org.springframework.stereotype.Service;
+
+@Service
+public class RepeatOffenderRecordServiceImpl
+        implements RepeatOffenderRecordService {
+
+    private final RepeatOffenderRecordRepository repeatOffenderRecordRepository;
+    private final StudentProfileRepository studentProfileRepository;
+    private final IntegrityCaseRepository integrityCaseRepository;
 
     public RepeatOffenderRecordServiceImpl(
-            StudentProfileRepository studentRepo,
-            IntegrityCaseRepository caseRepo,
-            RepeatOffenderRecordRepository recordRepo,
-            RepeatOffenderCalculator calculator) {
+            RepeatOffenderRecordRepository repeatOffenderRecordRepository,
+            StudentProfileRepository studentProfileRepository,
+            IntegrityCaseRepository integrityCaseRepository) {
 
-        this.studentRepo = studentRepo;
-        this.caseRepo = caseRepo;
-        this.recordRepo = recordRepo;
-        this.calculator = calculator;
+        this.repeatOffenderRecordRepository = repeatOffenderRecordRepository;
+        this.studentProfileRepository = studentProfileRepository;
+        this.integrityCaseRepository = integrityCaseRepository;
     }
 
     @Override
     public RepeatOffenderRecord updateOrCreateRecord(Long studentId) {
-        StudentProfile student = studentProfileRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
-        List<IntegrityCase> cases = integrityCaseRepository.findByStudentProfile(student);
-        RepeatOffenderRecord record = calculator.computeRepeatOffenderRecord(student, cases);
+        StudentProfile student = studentProfileRepository.findById(studentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Student not found"));
+
+        RepeatOffenderRecord record =
+                repeatOffenderRecordRepository
+                        .findByStudentProfileId(studentId)
+                        .orElse(new RepeatOffenderRecord());
+
+        record.setStudentProfile(student);
+
+        int offences = integrityCaseRepository
+                .findByStudentProfileId(studentId)
+                .size();
+
+        record.setOffenceCount(offences);
+        record.setLastOffenceDate(LocalDate.now());
+        record.setSeverityLevel(
+                RepeatOffenderCalculator.calculateSeverity(record));
+
         return repeatOffenderRecordRepository.save(record);
     }
 
     @Override
     public List<RepeatOffenderRecord> getAllRecords() {
         return repeatOffenderRecordRepository.findAll();
-    }
-
-
-    @Override
-    public RepeatOffenderRecord recalculate(Long studentId) {
-        StudentProfile student = studentRepo.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("Student not found"));
-
-        var cases = caseRepo.findByStudentProfile(student);
-        RepeatOffenderRecord record =
-                calculator.computeRepeatOffenderRecord(student, cases);
-
-        student.setRepeatOffender(record.getTotalCases() >= 2);
-        recordRepo.save(record);
-        studentRepo.save(student);
-
-        return record;
     }
 }
