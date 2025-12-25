@@ -1,103 +1,70 @@
 package com.example.demo.entity;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "integrity_case")
-public class IntegrityCase {
+public class EvidenceRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String studentIdentifier; // This is a String
+    @ManyToOne(optional = false)
+    private IntegrityCase integrityCase;
 
-    @Column(nullable = false)
-    private String status;   
-    private String courseCode;
-    private String instructorName;
-    private String description;
-    private LocalDate incidentDate;
-    private LocalDateTime createdAt;
+    private String evidenceType;
+    private String content;
+    private String submittedBy;
+    private LocalDateTime submittedAt;
 
-    public IntegrityCase() {}
-
-    public IntegrityCase( String studentIdentifier, String status, String courseCode,
-                         String instructorName, String description,
-                         LocalDate incidentDate, LocalDateTime createdAt) {
-        this.studentIdentifier = studentIdentifier;
-        this.status = status;
-        this.courseCode = courseCode;
-        this.instructorName = instructorName;
-        this.description = description;
-        this.incidentDate = incidentDate;
-        this.createdAt = createdAt;
+    @PrePersist
+    void onCreate() {
+        submittedAt = LocalDateTime.now();
     }
-
+    public EvidenceRecord(){}
+    public EvidenceRecord(IntegrityCase integrityCase, String evidenceType, String content, String submittedBy,
+            LocalDateTime submittedAt) {
+        this.integrityCase = integrityCase;
+        this.evidenceType = evidenceType;
+        this.content = content;
+        this.submittedBy = submittedBy;
+        this.submittedAt = submittedAt;
+    }
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
-    public String getStudentIdentifier() {
-        return studentIdentifier;
+    public IntegrityCase getIntegrityCase() {
+        return integrityCase;
     }
-
-    public void setStudentIdentifier(String studentIdentifier) {
-        this.studentIdentifier = studentIdentifier;
+    public void setIntegrityCase(IntegrityCase integrityCase) {
+        this.integrityCase = integrityCase;
     }
-
-    public String getCourseCode() {
-        return courseCode;
+    public String getEvidenceType() {
+        return evidenceType;
     }
-
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
+    public void setEvidenceType(String evidenceType) {
+        this.evidenceType = evidenceType;
     }
-
-    public String getInstructorName() {
-        return instructorName;
+    public String getContent() {
+        return content;
     }
-
-    public void setInstructorName(String instructorName) {
-        this.instructorName = instructorName;
+    public void setContent(String content) {
+        this.content = content;
     }
-
-    public String getDescription() {
-        return description;
+    public String getSubmittedBy() {
+        return submittedBy;
     }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSubmittedBy(String submittedBy) {
+        this.submittedBy = submittedBy;
     }
-
-    public String getStatus() {
-        return status;
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
     }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
     }
-
-    public LocalDate getIncidentDate() {
-        return incidentDate;
-    }
-
-    public void setIncidentDate(LocalDate incidentDate) {
-        this.incidentDate = incidentDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-}
+   }
