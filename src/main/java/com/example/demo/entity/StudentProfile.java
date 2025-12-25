@@ -38,7 +38,9 @@ public class StudentProfile {
     @OneToOne(mappedBy = "studentProfile", cascade = CascadeType.ALL)
     private RepeatOffenderRecord repeatOffenderRecord;
 
-    // Getters and Setters
+    // Constructors, Getters, Setters
+    public StudentProfile() {}
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getStudentId() { return studentId; }
