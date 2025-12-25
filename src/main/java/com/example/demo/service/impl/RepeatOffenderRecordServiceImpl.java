@@ -28,6 +28,22 @@ public class RepeatOffenderRecordServiceImpl implements RepeatOffenderRecordServ
     }
 
     @Override
+    public RepeatOffenderRecord updateOrCreateRecord(Long studentId) {
+        StudentProfile student = studentProfileRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        List<IntegrityCase> cases = integrityCaseRepository.findByStudentProfile(student);
+        RepeatOffenderRecord record = calculator.computeRepeatOffenderRecord(student, cases);
+        return repeatOffenderRecordRepository.save(record);
+    }
+
+    @Override
+    public List<RepeatOffenderRecord> getAllRecords() {
+        return repeatOffenderRecordRepository.findAll();
+    }
+
+
+    @Override
     public RepeatOffenderRecord recalculate(Long studentId) {
         StudentProfile student = studentRepo.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));

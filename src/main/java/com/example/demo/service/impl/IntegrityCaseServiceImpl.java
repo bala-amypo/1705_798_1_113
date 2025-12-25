@@ -55,4 +55,10 @@ public class IntegrityCaseServiceImpl implements IntegrityCaseService {
     public Optional<IntegrityCase> getCaseById(Long caseId) {
         return caseRepo.findById(caseId);
     }
+
+    @Override
+    public List<IntegrityCase> getCasesByStatus(String status) {
+        return integrityCaseRepository.findByStatus(status);
+    }
+
 }

@@ -9,6 +9,8 @@ public interface IntegrityCaseService {
 
     IntegrityCase createCase(IntegrityCase integrityCase);
 
+    List<IntegrityCase> getCasesByStatus(String status);
+
     IntegrityCase updateCaseStatus(Long caseId, String newStatus);
 
     List<IntegrityCase> getCasesByStudent(Long studentId);

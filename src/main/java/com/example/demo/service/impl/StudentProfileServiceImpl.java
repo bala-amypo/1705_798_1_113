@@ -37,6 +37,15 @@ public class StudentProfileServiceImpl implements StudentProfileService {
     }
 
     @Override
+    public StudentProfile getStudentByStudentId(String studentId) {
+        return studentProfileRepository.findAll()
+                .stream()
+                .filter(s -> studentId.equals(s.getStudentId()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+    }
+
+    @Override
     public StudentProfile getStudentById(Long id) {
         return studentRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
